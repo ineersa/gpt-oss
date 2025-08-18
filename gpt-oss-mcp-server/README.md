@@ -14,16 +14,19 @@ The build system prompt script show case all the care needed to automatically di
 uv pip install -r requirements.txt
 ```
 
+Single command (activate venv and run over STDIO):
+
 ```bash
-# Assume we have harmony and gpt-oss installed
-uv pip install mcp[cli]
-# start the servers
-mcp run -t sse browser_server.py:mcp
-mcp run -t sse python_server.py:mcp
+~/python/mcp-venv/bin/mcp run -t stdio /home/ineersa/python/gpt-oss/gpt-oss-mcp-server/python_server.py:mcp
+~/python/mcp-venv/bin/mcp run -t stdio /home/ineersa/python/gpt-oss/gpt-oss-mcp-server/browser_server.py:mcp
 ```
 
-You can now use MCP inspector to play with the tools.
-Once opened, set SSE to `http://localhost:8001/sse` and `http://localhost:8000/sse` respectively.
+You can now use MCP inspector or any STDIO-compatible client to play with the tools.
+
+Logging and STDERR:
+- By default these STDIO servers silence logging (MCP_QUIET_STDERR=1) to avoid writing INFO logs to STDERR and interfering with clients that treat STDERR as failure.
+- To re-enable library logging, set MCP_QUIET_STDERR=0 before launching, e.g.:
+  MCP_QUIET_STDERR=0 /home/ineersa/python/mcp-venv/bin/mcp run -t stdio /home/ineersa/python/gpt-oss/gpt-oss-mcp-server/python_server.py:mcp
 
 To compare the system prompt and see how to construct it via MCP service discovery, see `build-system-prompt.py`.
 This script will generate exactly the same system prompt as `reference-system-prompt.py`.

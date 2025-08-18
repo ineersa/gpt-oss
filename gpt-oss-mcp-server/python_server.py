@@ -2,6 +2,13 @@ from mcp.server.fastmcp import FastMCP
 from gpt_oss.tools.python_docker.docker_tool import PythonTool
 from openai_harmony import Message, TextContent, Author, Role
 
+# Silence logging to avoid writing to STDERR in STDIO mode by default
+import os
+import logging
+if os.environ.get("MCP_QUIET_STDERR", "1") == "1":
+    # Disable all logging output (including WARNING/ERROR) to avoid interfering with STDIO clients
+    logging.disable(logging.CRITICAL)
+
 # Pass lifespan to server
 mcp = FastMCP(
     name="python",
@@ -31,3 +38,14 @@ async def python(code: str) -> str:
                     content=[TextContent(text=code)])):
         messages.append(message)
     return "\n".join([message.content[0].text for message in messages])
+
+
+if __name__ == "__main__":
+    import anyio
+    from mcp.server.stdio import stdio_server
+
+    async def _main() -> None:
+        async with stdio_server() as (read, write):
+            await mcp.run(read, write)
+
+    anyio.run(_main)

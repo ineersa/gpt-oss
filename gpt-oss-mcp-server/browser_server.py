@@ -7,6 +7,13 @@ from mcp.server.fastmcp import Context, FastMCP
 from gpt_oss.tools.simple_browser import SimpleBrowserTool
 from gpt_oss.tools.simple_browser.backend import ExaBackend
 
+# Silence logging to avoid writing to STDERR in STDIO mode by default
+import os
+import logging
+if os.environ.get("MCP_QUIET_STDERR", "1") == "1":
+    # Disable all logging output (including WARNING/ERROR) to avoid interfering with STDIO clients
+    logging.disable(logging.CRITICAL)
+
 
 @dataclass
 class AppContext:
@@ -39,7 +46,6 @@ Do not quote more than 10 words directly from the tool output.
 sources=web
 """.strip(),
     lifespan=app_lifespan,
-    port=8001,
 )
 
 
@@ -112,3 +118,14 @@ async def find_pattern(ctx: Context, pattern: str, cursor: int = -1) -> str:
         if message.content and hasattr(message.content[0], 'text'):
             messages.append(message.content[0].text)
     return "\n".join(messages)
+
+
+if __name__ == "__main__":
+    import anyio
+    from mcp.server.stdio import stdio_server
+
+    async def _main() -> None:
+        async with stdio_server() as (read, write):
+            await mcp.run(read, write)
+
+    anyio.run(_main)
