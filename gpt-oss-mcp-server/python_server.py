@@ -6,8 +6,8 @@ from openai_harmony import Message, TextContent, Author, Role
 import os
 import logging
 if os.environ.get("MCP_QUIET_STDERR", "1") == "1":
-    # Disable all logging output (including WARNING/ERROR) to avoid interfering with STDIO clients
-    logging.disable(logging.CRITICAL)
+    # Suppress DEBUG/INFO/WARNING to keep STDIO clean; allow ERROR and CRITICAL to pass through
+    logging.disable(logging.WARNING)
 
 # Pass lifespan to server
 mcp = FastMCP(

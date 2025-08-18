@@ -24,8 +24,8 @@ Single command (activate venv and run over STDIO):
 You can now use MCP inspector or any STDIO-compatible client to play with the tools.
 
 Logging and STDERR:
-- By default these STDIO servers silence logging (MCP_QUIET_STDERR=1) to avoid writing INFO logs to STDERR and interfering with clients that treat STDERR as failure.
-- To re-enable library logging, set MCP_QUIET_STDERR=0 before launching, e.g.:
+- By default (MCP_QUIET_STDERR=1), these STDIO servers suppress DEBUG/INFO/WARNING to avoid noisy STDERR output that can confuse STDIO clients. ERROR and CRITICAL are still emitted.
+- To re-enable full library logging (including INFO), set MCP_QUIET_STDERR=0 before launching, e.g.:
   MCP_QUIET_STDERR=0 /home/ineersa/python/mcp-venv/bin/mcp run -t stdio /home/ineersa/python/gpt-oss/gpt-oss-mcp-server/python_server.py:mcp
 
 To compare the system prompt and see how to construct it via MCP service discovery, see `build-system-prompt.py`.
