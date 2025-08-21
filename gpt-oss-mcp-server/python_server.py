@@ -2,12 +2,25 @@ from mcp.server.fastmcp import FastMCP
 from gpt_oss.tools.python_docker.docker_tool import PythonTool
 from openai_harmony import Message, TextContent, Author, Role
 
-# Silence logging to avoid writing to STDERR in STDIO mode by default
+# Configure logging to write to file (no STDERR) by default
 import os
 import logging
-if os.environ.get("MCP_QUIET_STDERR", "1") == "1":
-    # Suppress DEBUG/INFO/WARNING to keep STDIO clean; allow ERROR and CRITICAL to pass through
-    logging.disable(logging.WARNING)
+from pathlib import Path
+
+# Default log path: ~/python/logs/pytho_server.log (can be overridden)
+_log_file = os.environ.get("MCP_LOG_FILE")
+if not _log_file:
+    _log_dir = Path(os.path.expanduser("~/python/logs"))
+    _log_dir.mkdir(parents=True, exist_ok=True)
+    _log_file = str(_log_dir / "python_server.log")
+
+# File-only logging; no StreamHandler to STDERR
+logging.basicConfig(
+    level=logging.WARNING,
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+    handlers=[logging.FileHandler(_log_file, encoding="utf-8")],
+    force=True,
+)
 
 # Pass lifespan to server
 mcp = FastMCP(

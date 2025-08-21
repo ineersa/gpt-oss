@@ -23,10 +23,17 @@ Single command (activate venv and run over STDIO):
 
 You can now use MCP inspector or any STDIO-compatible client to play with the tools.
 
-Logging and STDERR:
-- By default (MCP_QUIET_STDERR=1), these STDIO servers suppress DEBUG/INFO/WARNING to avoid noisy STDERR output that can confuse STDIO clients. ERROR and CRITICAL are still emitted.
-- To re-enable full library logging (including INFO), set MCP_QUIET_STDERR=0 before launching, e.g.:
-  MCP_QUIET_STDERR=0 /home/ineersa/python/mcp-venv/bin/mcp run -t stdio /home/ineersa/python/gpt-oss/gpt-oss-mcp-server/python_server.py:mcp
+Browser server backend:
+- The browser server now uses a SearxNG-backed SimpleBrowserTool (no proprietary Exa API).
+- Configure your SearxNG instance URL via SEARXNG_URL (defaults to http://server:8088):
+  SEARXNG_URL=http://your-searx-host:8088 ~/python/mcp-venv/bin/mcp run -t stdio /home/ineersa/python/gpt-oss/gpt-oss-mcp-server/browser_server.py:mcp
+
+Logging:
+- By default, logs are written to files and not to STDERR to avoid interfering with STDIO transport.
+  - python_server.py -> ~/python/logs/python_server.log
+  - browser_server.py -> ~/python/logs/browser_server.log
+- You can override the path with MCP_LOG_FILE and the level with MCP_LOG_LEVEL (DEBUG, INFO, WARNING, ERROR, CRITICAL). Example:
+  MCP_LOG_FILE=/tmp/python_server.log MCP_LOG_LEVEL=DEBUG ~/python/mcp-venv/bin/mcp run -t stdio /home/ineersa/python/gpt-oss/gpt-oss-mcp-server/python_server.py:mcp
 
 To compare the system prompt and see how to construct it via MCP service discovery, see `build-system-prompt.py`.
 This script will generate exactly the same system prompt as `reference-system-prompt.py`.
